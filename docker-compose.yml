@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  db: # database 
+    image: postgres # name of image for database
+    volumes:
+      - ./data/db:/var/lib/postgresql/data # path to mount volumes to containers created 
+    environment: # admin credentials / authentication 
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  web: # client / frontend
+    build: . # copies and builds files into /code directory 
+    command: python manage.py runserver 0.0.0.0:8000 # runs python3 on port 8000
+    volumes: 
+      - .:/code # connects client service side with image volumes within the /code directory 
+    ports:
+      - "8000:8000" # ports which connects docker image with default CRA client port 
+    environment: # admin credentials
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    depends_on: # defines what services it relies on 
+      - db
